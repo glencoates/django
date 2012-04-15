@@ -151,6 +151,9 @@ class UserManager(models.Manager):
         from random import choice
         return ''.join([choice(allowed_chars) for i in range(length)])
 
+    # Hacked in to provide sane serialization in Django 1.3
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
 
 # A few helper functions for common logic between User and AnonymousUser.
 def _user_get_all_permissions(user, obj):
@@ -228,6 +231,10 @@ class User(models.Model):
 
     def get_absolute_url(self):
         return "/users/%s/" % urllib.quote(smart_str(self.username))
+
+    # Hacked in to provide sane serialization in Django 1.3
+    def natural_key(self):
+        return (self.username,)
 
     def is_anonymous(self):
         """
